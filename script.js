@@ -1,7 +1,8 @@
+
 // ==========================================
 // MAMA'S LITTLE WORLD 💖
+// Complete interactive script
 // ==========================================
-
 
 // ------------------------------------------
 // 1. OPENING SCREEN
@@ -10,14 +11,15 @@
 const introScreen = document.getElementById("introScreen");
 const enterBtn = document.getElementById("enterBtn");
 
-enterBtn.addEventListener("click", () => {
-  introScreen.classList.add("hide");
+if (introScreen && enterBtn) {
+  enterBtn.addEventListener("click", () => {
+    introScreen.classList.add("hide");
 
-  setTimeout(() => {
-    introScreen.style.display = "none";
-  }, 950);
-});
-
+    setTimeout(() => {
+      introScreen.style.display = "none";
+    }, 950);
+  });
+}
 
 // ------------------------------------------
 // 2. FLOATING SPARKLES ✨
@@ -34,27 +36,16 @@ function createSparkles() {
   for (let i = 0; i < 38; i++) {
     const sparkle = document.createElement("span");
 
-    sparkle.className = "sparkle";
     sparkle.textContent =
       symbols[Math.floor(Math.random() * symbols.length)];
 
     sparkle.style.left = Math.random() * 100 + "%";
-    sparkle.style.setProperty(
-      "--size",
-      (10 + Math.random() * 15) + "px"
-    );
-    sparkle.style.setProperty(
-      "--duration",
-      (9 + Math.random() * 12) + "s"
-    );
-    sparkle.style.setProperty(
-      "--delay",
-      (-Math.random() * 20) + "s"
-    );
-    sparkle.style.setProperty(
-      "--drift",
-      (Math.random() * 100 - 50) + "px"
-    );
+    sparkle.style.animationDelay = Math.random() * 15 + "s";
+    sparkle.style.animationDuration =
+      10 + Math.random() * 15 + "s";
+
+    sparkle.style.fontSize =
+      10 + Math.random() * 15 + "px";
 
     layer.appendChild(sparkle);
   }
@@ -62,20 +53,31 @@ function createSparkles() {
 
 createSparkles();
 
-
 // ------------------------------------------
-// 3. COUNTDOWN TO DECEMBER 21, 2027
+// 3. BIRTHDAY COUNTDOWN 🎂
 // ------------------------------------------
 
 function updateCountdown() {
-  // Birthday target: December 21, 2027
-  const target = new Date("2027-12-21T00:00:00");
-  const now = new Date();
+  const birthday = new Date("December 21, 2027 00:00:00").getTime();
+  const now = Date.now();
+  const difference = birthday - now;
 
-  let difference = target.getTime() - now.getTime();
+  const daysElement = document.getElementById("days");
+  const hoursElement = document.getElementById("hours");
+  const minutesElement = document.getElementById("minutes");
+  const secondsElement = document.getElementById("seconds");
 
-  if (difference < 0) {
-    difference = 0;
+  if (!daysElement || !hoursElement ||
+      !minutesElement || !secondsElement) {
+    return;
+  }
+
+  if (difference <= 0) {
+    daysElement.textContent = "000";
+    hoursElement.textContent = "00";
+    minutesElement.textContent = "00";
+    secondsElement.textContent = "00";
+    return;
   }
 
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -89,493 +91,415 @@ function updateCountdown() {
     (difference / 1000) % 60
   );
 
-  document.getElementById("days").textContent =
-    String(days).padStart(3, "0");
-
-  document.getElementById("hours").textContent =
-    String(hours).padStart(2, "0");
-
-  document.getElementById("minutes").textContent =
-    String(minutes).padStart(2, "0");
-
-  document.getElementById("seconds").textContent =
-    String(seconds).padStart(2, "0");
+  daysElement.textContent = String(days).padStart(3, "0");
+  hoursElement.textContent = String(hours).padStart(2, "0");
+  minutesElement.textContent = String(minutes).padStart(2, "0");
+  secondsElement.textContent = String(seconds).padStart(2, "0");
 }
 
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-
 // ------------------------------------------
-// 4. MEMORY PHOTO LIGHTBOX
-// ------------------------------------------
-
-const lightbox = document.createElement("div");
-lightbox.className = "photo-lightbox";
-lightbox.innerHTML = `
-  <button class="lightbox-close" aria-label="Close photo">&times;</button>
-  <img src="" alt="Expanded memory">
-`;
-
-document.body.appendChild(lightbox);
-
-const lightboxImage = lightbox.querySelector("img");
-const lightboxClose = lightbox.querySelector(".lightbox-close");
-
-document.querySelectorAll(".photo-grid img, .special-memory-row img")
-  .forEach((photo) => {
-    photo.addEventListener("click", () => {
-      lightboxImage.src = photo.src;
-      lightboxImage.alt = photo.alt;
-      lightbox.classList.add("active");
-    });
-  });
-
-function closeLightbox() {
-  lightbox.classList.remove("active");
-  lightboxImage.src = "";
-}
-
-lightboxClose.addEventListener("click", closeLightbox);
-
-lightbox.addEventListener("click", (event) => {
-  if (event.target === lightbox) {
-    closeLightbox();
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeLightbox();
-  }
-});
-
-
-// ------------------------------------------
-// 5. FRIENDSHIP QUIZ 🎀
+// 4. FRIENDSHIP QUIZ 💖
 // ------------------------------------------
 
-const questions = [
+const quizQuestions = [
   {
-    q: "What do I call you?",
-    options: ["Mama", "Sister", "Boss", "Friend"],
-    answer: 0
-  },
-  {
-    q: "What do you mean to me?",
-    options: ["Nothing", "Everything", "A classmate", "A stranger"],
-    answer: 1
-  },
-  {
-    q: "Who is my special to me?",
-    options: ["Jeni", "Raksha", "Sameer", "Someone else"],
-    answer: 1
-  },
-  {
-    q: "What makes our friendship special?",
-    options: ["Trust", "Support", "All of these", "Memories"],
-    answer: 2
-  },
-  {
-    q: "What will I always do?",
+    question: "Who is my special?",
     options: [
-      "Ignore you",
-      "Always support you and be with you",
-      "Forget you",
-      "Avoid you"
+      "Jeni",
+      "Raksha 💖",
+      "Sameer",
+      "Nobody"
     ],
-    answer: 1
+    correct: 1
   },
   {
-    q: "What's your special nickname?",
+    question: "What matters most in our friendship?",
     options: [
-      "Mama 💖🫶",
-      "Kullachi 😆",
-      "Gay 🌈🏳️‍🌈",
-      "Lesbian 👻"
-    ],
-    answer: 0
-  },
-  {
-    q: "Who's your favourite troublemaker?",
-    options: ["Ahamed", "Sameer", "Uncle", "Jeni"],
-    answer: 0
-  },
-  {
-    q: "What's one thing we should never stop doing?",
-    options: [
-      "Irritate each other",
-      "Speak",
-      "Stay silent",
-      "Ignore"
-    ],
-    answer: 1
-  },
-  {
-    q: "What matters most in our friendship?",
-    options: ["Fame", "Trust", "Money", "Popularity"],
-    answer: 1
-  },
-  {
-    q: "Our friendship is...?",
-    options: [
-      "Temporary",
-      "Both — silly & special",
-      "Just ordinary",
+      "Trust",
+      "Money",
+      "Everything",
       "Nothing"
     ],
-    answer: 1
+    correct: 3
+  },
+  {
+    question: "Who is the main character of this little diary?",
+    options: [
+      "Ahamed",
+      "Sameer",
+      "Raksha (Mama 💖🫶)",
+      "Jeni"
+    ],
+    correct: 2
+  },
+  {
+    question: "What makes our memories special?",
+    options: [
+      "Funny moments",
+      "Crazy conversations",
+      "Being together",
+      "All of these"
+    ],
+    correct: 3
+  },
+  {
+    question: "What should we always do for each other?",
+    options: [
+      "Ignore each other",
+      "Always support you and be with you",
+      "Stop talking",
+      "Forget everything"
+    ],
+    correct: 0
+  },
+  {
+    question: "Who is my forever special?",
+    options: [
+      "Jeni",
+      "Sameer",
+      "Mama 💖🫶",
+      "Nobody"
+    ],
+    correct: 2
+  },
+  {
+    question: "Who created this little birthday surprise?",
+    options: [
+      "Sameer",
+      "Ahamed",
+      "Jeni",
+      "Raksha"
+    ],
+    correct: 1
+  },
+  {
+    question: "What should we never stop doing?",
+    options: [
+      "Fighting",
+      "Irritate each other",
+      "Speak",
+      "Complaining"
+    ],
+    correct: 1
+  },
+  {
+    question: "What is the foundation of our friendship?",
+    options: [
+      "Money",
+      "Popularity",
+      "Trust",
+      "Gifts"
+    ],
+    correct: 2
+  },
+  {
+    question: "What describes our friendship best?",
+    options: [
+      "Crazy memories",
+      "Endless support",
+      "Both",
+      "Neither"
+    ],
+    correct: 2
   }
 ];
+
+const questionNumber = document.getElementById("questionNumber");
+const quizScore = document.getElementById("quizScore");
+const quizProgress = document.getElementById("quizProgress");
+const questionText = document.getElementById("questionText");
+const answerOptions = document.getElementById("answerOptions");
+const answerFeedback = document.getElementById("answerFeedback");
+const nextQuestion = document.getElementById("nextQuestion");
+const quizResult = document.getElementById("quizResult");
+const resultText = document.getElementById("resultText");
+const replayQuiz = document.getElementById("replayQuiz");
 
 let currentQuestion = 0;
 let score = 0;
 let answered = false;
 
-const questionNumber = document.getElementById("questionNumber");
-const questionText = document.getElementById("questionText");
-const answerOptions = document.getElementById("answerOptions");
-const answerFeedback = document.getElementById("answerFeedback");
-const nextQuestion = document.getElementById("nextQuestion");
-const quizScore = document.getElementById("quizScore");
-const quizProgress = document.getElementById("quizProgress");
-const quizResult = document.getElementById("quizResult");
-const resultText = document.getElementById("resultText");
+function loadQuestion() {
+  if (
+    !questionNumber || !quizScore || !quizProgress ||
+    !questionText || !answerOptions || !answerFeedback ||
+    !nextQuestion || !quizResult
+  ) {
+    return;
+  }
 
-function showQuestion() {
-  const question = questions[currentQuestion];
+  const question = quizQuestions[currentQuestion];
 
   answered = false;
 
   questionNumber.textContent =
-    `Question ${currentQuestion + 1} of ${questions.length}`;
+    `Question ${currentQuestion + 1} of ${quizQuestions.length}`;
 
-  questionText.textContent = question.q;
   quizScore.textContent = `Score: ${score}`;
 
   quizProgress.style.width =
-    `${((currentQuestion + 1) / questions.length) * 100}%`;
+    `${(currentQuestion / quizQuestions.length) * 100}%`;
 
+  questionText.textContent = question.question;
   answerOptions.innerHTML = "";
   answerFeedback.textContent = "";
 
   nextQuestion.hidden = true;
   quizResult.hidden = true;
 
-  answerOptions.hidden = false;
-  questionText.hidden = false;
-
   question.options.forEach((option, index) => {
     const button = document.createElement("button");
 
     button.type = "button";
-    button.textContent = option;
+    button.className = "answer-btn";
+    button.textContent =
+      `${String.fromCharCode(65 + index)}) ${option}`;
 
     button.addEventListener("click", () => {
-      selectAnswer(index);
+      selectAnswer(index, button);
     });
 
     answerOptions.appendChild(button);
   });
 }
 
-function selectAnswer(selected) {
+function selectAnswer(selectedIndex, selectedButton) {
   if (answered) return;
 
   answered = true;
 
-  const correct = questions[currentQuestion].answer;
+  const question = quizQuestions[currentQuestion];
+  const buttons = answerOptions.querySelectorAll("button");
 
-  if (selected === correct) {
-    score++;
-    answerFeedback.textContent =
-      "Correct! You know us well! 💖";
-  } else {
-    answerFeedback.textContent =
-      `Ahaa! The correct answer was "${questions[currentQuestion].options[correct]}". 😂`;
-  }
-
-  [...answerOptions.children].forEach((button, index) => {
+  buttons.forEach(button => {
     button.disabled = true;
-
-    if (index === correct) {
-      button.classList.add("correct-answer");
-    } else if (index === selected) {
-      button.classList.add("wrong-answer");
-    }
   });
+
+  if (selectedIndex === question.correct) {
+    score++;
+
+    selectedButton.classList.add("correct");
+
+    answerFeedback.textContent = "Correct! You know us so well! 💖";
+  } else {
+    selectedButton.classList.add("wrong");
+
+    buttons[question.correct].classList.add("correct");
+
+    answerFeedback.textContent =
+      "Ahaa u are Wrong !!! 😂 Try the next one!";
+  }
 
   quizScore.textContent = `Score: ${score}`;
 
-  nextQuestion.textContent =
-    currentQuestion === questions.length - 1
-      ? "See my result ✨"
-      : "Next question →";
+  quizProgress.style.width =
+    `${((currentQuestion + 1) / quizQuestions.length) * 100}%`;
 
   nextQuestion.hidden = false;
+
+  nextQuestion.textContent =
+    currentQuestion === quizQuestions.length - 1
+      ? "See your result 💖"
+      : "Next question →";
 }
 
-nextQuestion.addEventListener("click", () => {
-  if (!answered) return;
-
-  currentQuestion++;
-
-  if (currentQuestion < questions.length) {
-    showQuestion();
-  } else {
-    showResult();
-  }
-});
-
-function showResult() {
+function showQuizResult() {
   questionNumber.textContent = "Quiz completed!";
-  questionText.hidden = true;
-  answerOptions.hidden = true;
+  questionText.textContent = "";
+  answerOptions.innerHTML = "";
   answerFeedback.textContent = "";
   nextQuestion.hidden = true;
   quizResult.hidden = false;
 
   quizProgress.style.width = "100%";
-
-  let message;
+  quizScore.textContent = `Score: ${score}`;
 
   if (score === 10) {
-    message =
-      "10/10! Perfect! You really know our friendship. 🏆💖";
+    resultText.textContent =
+      "10/10! Perfect! You know this little friendship inside out! 🥹💖";
   } else if (score >= 7) {
-    message =
-      `${score}/10! Pretty impressive, Mama! 🫶`;
+    resultText.textContent =
+      `${score}/10! Amazing! You know so many of our little memories! 🫶`;
   } else if (score >= 4) {
-    message =
-      `${score}/10! Not bad! We need more silly memories. 😂`;
+    resultText.textContent =
+      `${score}/10! Not bad! But you still have some memories to explore! 😂`;
   } else {
-    message =
-      `${score}/10! Ahaa, we have some catching up to do! 💖`;
+    resultText.textContent =
+      `${score}/10! Ahaa! Looks like you need to read this diary again! 💌`;
   }
-
-  resultText.textContent = message;
 }
 
-document.getElementById("replayQuiz").addEventListener("click", () => {
+if (nextQuestion) {
+  nextQuestion.addEventListener("click", () => {
+    if (currentQuestion < quizQuestions.length - 1) {
+      currentQuestion++;
+      loadQuestion();
+    } else {
+      showQuizResult();
+    }
+  });
+}
+
+function restartQuiz() {
   currentQuestion = 0;
   score = 0;
-  showQuestion();
-});
+  loadQuestion();
+}
 
-showQuestion();
+if (replayQuiz) {
+  replayQuiz.addEventListener("click", restartQuiz);
+}
 
+if (questionText && answerOptions) {
+  loadQuestion();
+}
 
 // ------------------------------------------
-// 6. SECRET PASSWORD 🔐
+// 5. PHOTO BOOTH 📸
 // ------------------------------------------
 
-const secretPassword =
-  document.getElementById("secretPassword");
+const photoUpload = document.getElementById("photoUpload");
+const boothGallery = document.getElementById("boothGallery");
 
-const secretFeedback =
-  document.getElementById("secretFeedback");
+const PHOTO_STORAGE_KEY = "mamaLittleWorldPhotos";
 
-const secretMessage =
-  document.getElementById("secretMessage");
+function getSavedPhotos() {
+  try {
+    return JSON.parse(localStorage.getItem(PHOTO_STORAGE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
 
-document.getElementById("unlockSecret").addEventListener("click", () => {
-  const password = secretPassword.value.trim();
+function displayBoothPhotos() {
+  if (!boothGallery) return;
 
-  if (password.toLowerCase() === "mama") {
+  boothGallery.innerHTML = "";
+
+  const photos = getSavedPhotos();
+
+  photos.forEach((photo, index) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "booth-photo";
+
+    const image = document.createElement("img");
+    image.src = photo;
+    image.alt = `Photo booth memory ${index + 1}`;
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.textContent = "×";
+    removeButton.setAttribute("aria-label", "Remove photo");
+
+    removeButton.addEventListener("click", () => {
+      const updatedPhotos = getSavedPhotos();
+      updatedPhotos.splice(index, 1);
+
+      localStorage.setItem(
+        PHOTO_STORAGE_KEY,
+        JSON.stringify(updatedPhotos)
+      );
+
+      displayBoothPhotos();
+    });
+
+    wrapper.appendChild(image);
+    wrapper.appendChild(removeButton);
+    boothGallery.appendChild(wrapper);
+  });
+}
+
+if (photoUpload) {
+  photoUpload.addEventListener("change", async event => {
+    const files = Array.from(event.target.files || []);
+    const savedPhotos = getSavedPhotos();
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
+
+      const dataURL = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+      });
+
+      savedPhotos.push(dataURL);
+    }
+
+    try {
+      localStorage.setItem(
+        PHOTO_STORAGE_KEY,
+        JSON.stringify(savedPhotos)
+      );
+
+      displayBoothPhotos();
+    } catch {
+      alert(
+        "Your browser storage is full. Try adding fewer or smaller photos."
+      );
+    }
+
+    photoUpload.value = "";
+  });
+}
+
+displayBoothPhotos();
+
+// ------------------------------------------
+// 6. SECRET CORNER 🔐
+// ------------------------------------------
+
+const secretPassword = document.getElementById("secretPassword");
+const unlockSecret = document.getElementById("unlockSecret");
+const secretFeedback = document.getElementById("secretFeedback");
+const secretMessage = document.getElementById("secretMessage");
+
+function checkSecret() {
+  if (!secretPassword || !secretFeedback || !secretMessage) return;
+
+  const enteredPassword = secretPassword.value.trim().toLowerCase();
+
+  if (enteredPassword === "mama") {
     secretFeedback.textContent = "You found the secret! 💖";
     secretMessage.hidden = false;
   } else {
     secretFeedback.textContent = "Ahaa u are Wrong !!! 😂";
     secretMessage.hidden = true;
   }
-});
+}
 
-secretPassword.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    document.getElementById("unlockSecret").click();
-  }
-});
+if (unlockSecret) {
+  unlockSecret.addEventListener("click", checkSecret);
+}
 
+if (secretPassword) {
+  secretPassword.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      checkSecret();
+    }
+  });
+}
 
 // ------------------------------------------
-// 7. FINAL SECRET 💌
+// 7. FINAL SURPRISE 💌
 // ------------------------------------------
 
 const finalReveal = document.getElementById("finalReveal");
 const finalMessage = document.getElementById("finalMessage");
 
-finalReveal.addEventListener("click", () => {
-  finalMessage.hidden = false;
-
-  finalReveal.textContent = "Your surprise is open ♡";
-  finalReveal.disabled = true;
-});
-
-
-// ------------------------------------------
-// 8. MUSIC PLAYERS 🎵
-// Only one chapter plays at a time.
-// No autoplay.
-// ------------------------------------------
-
-const audioPlayers = document.querySelectorAll(".chapter-card audio");
-
-audioPlayers.forEach((player) => {
-  player.addEventListener("play", () => {
-    audioPlayers.forEach((otherPlayer) => {
-      if (otherPlayer !== player) {
-        otherPlayer.pause();
-      }
-    });
-  });
-});
-
-
-// ------------------------------------------
-// 9. PHOTO BOOTH
-// Saves photos in this browser using IndexedDB.
-// ------------------------------------------
-
-const DB_NAME = "MamaPhotoBooth";
-const STORE_NAME = "photos";
-
-let photoDB;
-
-function openPhotoDB() {
-  return new Promise((resolve, reject) => {
-    if (!("indexedDB" in window)) {
-      reject(new Error("IndexedDB is unavailable."));
-      return;
-    }
-
-    const request = indexedDB.open(DB_NAME, 1);
-
-    request.onupgradeneeded = () => {
-      const db = request.result;
-
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, {
-          keyPath: "id",
-          autoIncrement: true
-        });
-      }
-    };
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+if (finalReveal && finalMessage) {
+  finalReveal.addEventListener("click", () => {
+    finalMessage.hidden = false;
+    finalReveal.textContent = "Your surprise is open 💖";
+    finalReveal.disabled = true;
   });
 }
-
-function savePhoto(file) {
-  return new Promise((resolve, reject) => {
-    const transaction =
-      photoDB.transaction(STORE_NAME, "readwrite");
-
-    transaction.objectStore(STORE_NAME).add({
-      name: file.name,
-      image: file,
-      created: Date.now()
-    });
-
-    transaction.oncomplete = resolve;
-    transaction.onerror = () => reject(transaction.error);
-  });
-}
-
-function loadPhotos() {
-  return new Promise((resolve, reject) => {
-    const transaction =
-      photoDB.transaction(STORE_NAME, "readonly");
-
-    const request =
-      transaction.objectStore(STORE_NAME).getAll();
-
-    request.onsuccess = () => {
-      renderPhotos(request.result);
-      resolve();
-    };
-
-    request.onerror = () => reject(request.error);
-  });
-}
-
-function renderPhotos(photos) {
-  const gallery = document.getElementById("boothGallery");
-
-  gallery.innerHTML = "";
-
-  photos.forEach((photo) => {
-    const card = document.createElement("div");
-    const img = document.createElement("img");
-    const remove = document.createElement("button");
-
-    const imageURL = URL.createObjectURL(photo.image);
-
-    img.src = imageURL;
-    img.alt = photo.name;
-
-    img.addEventListener("load", () => {
-      URL.revokeObjectURL(imageURL);
-    }, { once: true });
-
-    remove.textContent = "Remove";
-    remove.type = "button";
-
-    remove.addEventListener("click", () => {
-      deletePhoto(photo.id);
-    });
-
-    card.appendChild(img);
-    card.appendChild(remove);
-
-    gallery.appendChild(card);
-  });
-}
-
-function deletePhoto(id) {
-  const transaction =
-    photoDB.transaction(STORE_NAME, "readwrite");
-
-  transaction.objectStore(STORE_NAME).delete(id);
-
-  transaction.oncomplete = () => {
-    loadPhotos();
-  };
-}
-
-async function initialisePhotoBooth() {
-  try {
-    photoDB = await openPhotoDB();
-    await loadPhotos();
-  } catch (error) {
-    document.getElementById("boothGallery").textContent =
-      "Photo booth storage is unavailable in this browser.";
-  }
-}
-
-document.getElementById("photoUpload").addEventListener(
-  "change",
-  async (event) => {
-    const files = [...event.target.files];
-
-    if (!photoDB) {
-      alert("Photo booth is not ready yet. Please try again.");
-      return;
-    }
-
-    for (const file of files) {
-      if (file.type.startsWith("image/")) {
-        await savePhoto(file);
-      }
-    }
-
-    await loadPhotos();
-    event.target.value = "";
-  }
-);
-
-initialisePhotoBooth();
-
 
 // ==========================================
 // END OF MAMA'S LITTLE WORLD 💖
